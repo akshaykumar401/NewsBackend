@@ -269,9 +269,8 @@ const updateUserProfile = asyncHandler(async (req, res) => {
   if(!avatorLocalPath) {
     throw new ApiError(400, "Please Upload Avator")
   }
-  console.log(avatorLocalPath)
   const avator = await uploadOnCloudnary(avatorLocalPath)
-  console.log(avator)
+  
   if(!avator){
     throw new ApiError(401, "Avator Upload Failed")
   }
