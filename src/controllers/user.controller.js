@@ -47,8 +47,7 @@ const sigIn = asyncHandler(async (req, res) => {
   }
 
   // Uploading them to Cloudinary if avatorLocalPath exists.
-  
-  const coverImage = await uploadOnCloudnary(avatorLocalPath);
+  const avatorImage = await uploadOnCloudnary(avatorLocalPath);
 
   // Creating User Object
   const user = await User.create({
@@ -56,7 +55,7 @@ const sigIn = asyncHandler(async (req, res) => {
     email: email.toLowerCase(),
     password,
     username: username.toLowerCase(),
-    avator: coverImage?.url || "default.jpeg"
+    avator: avatorImage?.url || "default.jpeg"
   })
 
   // Removing Password and Refresh Token field from response.

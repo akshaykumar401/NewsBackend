@@ -2,6 +2,7 @@
   "name": "news-app",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "nodemon ./src/index.js",
     "start": "node ./src/index.js"

@@ -35,7 +35,7 @@ const userSchima = new Schema(
     post: [
       {
         type: Schema.Types.ObjectId,
-        ref: "post",
+        ref: "Post",
       }
     ],
     refreshToken: {
