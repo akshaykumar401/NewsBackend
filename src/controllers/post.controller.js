@@ -5,7 +5,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { Post } from "../models/post.model.js";
 import { User } from "../models/user.model.js";
 
-// Create Post Methode...
+// Create Post Method...
 const createPost = asyncHandler(async (req, res) => {
   const { title, description } = req.body
 
@@ -47,7 +47,7 @@ const createPost = asyncHandler(async (req, res) => {
 
 })
 
-// Delete Post Methode...
+// Delete Post Method...
 const deletePost = asyncHandler(async (req, res) => {
   const { id } = req.params
 
@@ -72,7 +72,64 @@ const deletePost = asyncHandler(async (req, res) => {
     )
 })
 
+// View All Post Method...
+const viewAllPost = asyncHandler(async (req, res) => {
+  const posts = await Post.find().populate("user").select("-password -refreshToken")
+
+  if (!posts || posts.length === 0) {
+    return res
+      .status(202)
+      .json(
+        new ApiResponse(
+          202,
+          [],
+          "No Posts Found",
+        )
+      )
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        posts,
+        "Posts Retrieved Successfully",
+      )
+    )
+})
+
+// View Login User Post Method...
+const viewUserPost = asyncHandler(async (req, res) => {
+  const posts = await Post.find({ user: req.user?._id }).populate("user").select("-password -refreshToken")
+
+  // if Not Having Post
+  if (!posts || posts.length === 0) {
+    return res
+      .status(202)
+      .json(
+        new ApiResponse(
+          202,
+          [],
+          "No Posts Found",
+        )
+      )
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        posts,
+        "Posts Retrieved Successfully",
+      )
+    )
+})
+
 export {
   createPost,
-  deletePost
+  deletePost,
+  viewAllPost,
+  viewUserPost
 }
