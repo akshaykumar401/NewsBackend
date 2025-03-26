@@ -24,13 +24,13 @@ router.route("/createPost").post(
 )
 
 // Delete Post -> req.param(id)
-router.route("/c/:id").get(
+router.route("/delete/:id").get(
   verifyJWT,
   deletePost
 )
 
 // Edit Post
-
+router.route("/editPost/:id").patch()
 
 // View All Post
 router.route("/viewAllpost").get(

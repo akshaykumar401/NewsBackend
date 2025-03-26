@@ -88,6 +88,14 @@ const viewAllPost = asyncHandler(async (req, res) => {
       )
   }
 
+  // Remove Password and refreshToken from posts
+  posts.forEach(post => {
+    if (post.user) {
+      post.user.password = undefined;
+      post.user.refreshToken = undefined;
+    }
+  });
+
   return res
     .status(200)
     .json(
@@ -101,7 +109,7 @@ const viewAllPost = asyncHandler(async (req, res) => {
 
 // View Login User Post Method...
 const viewUserPost = asyncHandler(async (req, res) => {
-  const posts = await Post.find({ user: req.user?._id }).populate("user").select("-password -refreshToken")
+  const posts = await Post.find({ user: req.user?._id }).populate("user")
 
   // if Not Having Post
   if (!posts || posts.length === 0) {
@@ -116,6 +124,14 @@ const viewUserPost = asyncHandler(async (req, res) => {
       )
   }
 
+  // Remove Password and refreshToken from posts
+  posts.forEach(post => {
+    if (post.user) {
+      post.user.password = undefined;
+      post.user.refreshToken = undefined;
+    }
+  });
+
   return res
     .status(200)
     .json(
@@ -125,6 +141,128 @@ const viewUserPost = asyncHandler(async (req, res) => {
         "Posts Retrieved Successfully",
       )
     )
+})
+
+// Edit Post Method...
+const editPost = asyncHandler(async (req, res) => {
+  const { id } = req.params
+  const { title, description, image } = req.body
+
+  
+
+  if (description && title) {
+    const post = await Post.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          description,
+          title
+        }
+      },
+      { new: true }
+    )
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          post,
+          "Post Updated Successfully",
+        )
+      )
+  }
+
+  if (title) {
+    const post = await Post.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          title
+        }
+      },
+      { new: true }
+    )
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          post,
+          "Post Updated Successfully",
+        )
+      )
+  }
+
+  if (description) {
+    const post = await Post.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          description
+        }
+      },
+      { new: true }
+    )
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          post,
+          "Post Updated Successfully",
+        )
+      )
+  }
+
+  if (image) {
+    // Uploading Referance Image
+    let imageLocalPath
+    if (req.files && Array.isArray(req.files.image) && req.files.image.length > 0) {
+      imageLocalPath = req.files.image[0].path;
+    }
+
+    if(!imageLocalPath) {
+      throw new ApiError(404, "Image Not Found")
+    }
+
+    // Uploading them to Cloudinary if imageLocalPath exists.
+    const refImage = await uploadOnCloudnary(imageLocalPath);
+
+    const post = await Post.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          image: refImage?.url,
+        }
+      },
+      { new: true }
+    )
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          post,
+          "Post Updated Successfully",
+        )
+      )
+  }
+
+  if (!title && !description && !image) {
+    return res
+      .status(404)
+      .json(
+        new ApiError(
+          404,
+          [],
+          "Please fill in the required fields",
+        )
+      )
+  }
 })
 
 export {
