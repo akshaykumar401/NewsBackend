@@ -146,9 +146,91 @@ const viewUserPost = asyncHandler(async (req, res) => {
 // Edit Post Method...
 const editPost = asyncHandler(async (req, res) => {
   const { id } = req.params
-  const { title, description, image } = req.body
+  const { title, description } = req.body
+  // Uploading Referance Image
+  let imageLocalPath
+  if (req.files && Array.isArray(req.files.image) && req.files.image.length > 0) {
+    imageLocalPath = req.files.image[0].path;
+  }
 
-  
+  if (title && imageLocalPath && description) {
+    // Uploading them to Cloudinary if imageLocalPath exists.
+    const refImage = await uploadOnCloudnary(imageLocalPath);
+
+    const post = await Post.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          title,
+          description,
+          referanceImage: refImage?.url
+        }
+      },
+      { new: true }
+    )
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          post,
+          "Post Updated Successfully",
+        )
+      )
+  }
+
+  if (title && imageLocalPath) {
+    // Uploading them to Cloudinary if imageLocalPath exists.
+    const refImage = await uploadOnCloudnary(imageLocalPath);
+
+    const post = await Post.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          title,
+          referanceImage: refImage?.url
+        }
+      },
+      { new: true }
+    )
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          post,
+          "Post Updated Successfully",
+        )
+      )
+  }
+
+  if (description && imageLocalPath) {
+    // Uploading them to Cloudinary if imageLocalPath exists.
+    const refImage = await uploadOnCloudnary(imageLocalPath);
+
+    const post = await Post.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          description,
+          referanceImage: refImage?.url
+        }
+      },
+      { new: true }
+    )
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          post,
+          "Post Updated Successfully",
+        )
+      )
+  }
 
   if (description && title) {
     const post = await Post.findByIdAndUpdate(
@@ -217,17 +299,7 @@ const editPost = asyncHandler(async (req, res) => {
       )
   }
 
-  if (image) {
-    // Uploading Referance Image
-    let imageLocalPath
-    if (req.files && Array.isArray(req.files.image) && req.files.image.length > 0) {
-      imageLocalPath = req.files.image[0].path;
-    }
-
-    if(!imageLocalPath) {
-      throw new ApiError(404, "Image Not Found")
-    }
-
+  if (imageLocalPath) {
     // Uploading them to Cloudinary if imageLocalPath exists.
     const refImage = await uploadOnCloudnary(imageLocalPath);
 
@@ -235,7 +307,7 @@ const editPost = asyncHandler(async (req, res) => {
       id,
       {
         $set: {
-          image: refImage?.url,
+          referanceImage: refImage?.url,
         }
       },
       { new: true }
@@ -252,7 +324,7 @@ const editPost = asyncHandler(async (req, res) => {
       )
   }
 
-  if (!title && !description && !image) {
+  if (!title && !description && !imageLocalPath) {
     return res
       .status(404)
       .json(
@@ -269,5 +341,6 @@ export {
   createPost,
   deletePost,
   viewAllPost,
-  viewUserPost
+  viewUserPost,
+  editPost
 }

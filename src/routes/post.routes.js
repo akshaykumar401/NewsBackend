@@ -5,7 +5,8 @@ import {
   createPost,
   deletePost,
   viewAllPost,
-  viewUserPost
+  viewUserPost,
+  editPost
 } from "../controllers/post.controller.js";
 
 const router = Router()
@@ -30,7 +31,16 @@ router.route("/delete/:id").get(
 )
 
 // Edit Post
-router.route("/editPost/:id").patch()
+router.route("/editPost/:id").patch(
+  verifyJWT,
+  upload.fields([
+    {
+      name: "image",
+      maxCount: 1
+    }
+  ]),
+  editPost
+)
 
 // View All Post
 router.route("/viewAllpost").get(
