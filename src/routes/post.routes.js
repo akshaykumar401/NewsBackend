@@ -6,7 +6,8 @@ import {
   deletePost,
   viewAllPost,
   viewUserPost,
-  editPost
+  editPost,
+  getPost
 } from "../controllers/post.controller.js";
 
 const router = Router()
@@ -55,7 +56,10 @@ router.route("/viewUserPost").get(
 )
 
 // View Post -> req.param(id)
-
+router.route("/viewPost/:id").get(
+  verifyJWT,
+  getPost
+)
 
 
 

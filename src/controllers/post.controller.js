@@ -337,10 +337,45 @@ const editPost = asyncHandler(async (req, res) => {
   }
 })
 
+// display single Post Methode...
+const getPost = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  // Finding user...
+  const post = await Post.findById({ _id: id }).populate("user");
+
+  if (!post) {
+    return res
+      .status(404)
+      .json(
+        new ApiError(
+          404,
+          [],
+          "Post not found",
+        )
+      )
+  }
+
+  // Remove Password and refreshToken
+  post.user.password = undefined;
+  post.user.refreshToken = undefined;
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        post,
+        "Post Retrieved Successfully",
+      )
+    )
+})
+
 export {
   createPost,
   deletePost,
   viewAllPost,
   viewUserPost,
-  editPost
+  editPost,
+  getPost
 }

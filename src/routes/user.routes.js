@@ -8,7 +8,8 @@ import {
   forgotPassword,
   getUserProfile,
   updateUserDetail,
-  updateUserProfile
+  updateUserProfile,
+  deleteUserProfile
 } from "../controllers/user.controller.js";
 
 const router = Router()
@@ -58,6 +59,12 @@ router.route("/updateAvator").patch(
   verifyJWT,
   upload.single("avator"),
   updateUserProfile
+)
+
+// Delete User Profile
+router.route("/deleteProfile").delete(
+  verifyJWT,
+  deleteUserProfile
 )
 
 export default router;

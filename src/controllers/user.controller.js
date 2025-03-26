@@ -132,7 +132,7 @@ const login = asyncHandler(async (req, res) => {
     )
 })
 
-// Logout
+// Logout Methode...
 const logout = asyncHandler(async (req, res) => {
   await User.findByIdAndUpdate(
     req.user._id,
@@ -165,7 +165,7 @@ const logout = asyncHandler(async (req, res) => {
     )
 })
 
-// Forgate Password....
+// Forgate Password Methode...
 const forgotPassword = asyncHandler(async (req, res) => {
   const { email, username, newPassword } = req.body;
 
@@ -177,7 +177,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
   // Validating is user exist
   const user = await User.findOne({
     $and: [
-      {email}, {username}
+      { email }, { username }
     ]
   })
   if (!user) {
@@ -186,7 +186,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
 
   // changing Password
   user.password = newPassword
-  await user.save({validateBeforeSave: false})
+  await user.save({ validateBeforeSave: false })
 
   return res
     .status(200)
@@ -220,7 +220,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
     )
 })
 
-// Update user Detail
+// Update user Detail Methode...
 const updateUserDetail = asyncHandler(async (req, res) => {
   const { username, fullName } = req.body;
 
@@ -260,17 +260,17 @@ const updateUserDetail = asyncHandler(async (req, res) => {
     )
 })
 
-// Update User Profile
+// Update User Profile Methode...
 const updateUserProfile = asyncHandler(async (req, res) => {
   const avatorLocalPath = req.file?.path
 
   // Validating is avator is Present or Not
-  if(!avatorLocalPath) {
+  if (!avatorLocalPath) {
     throw new ApiError(400, "Please Upload Avator")
   }
   const avator = await uploadOnCloudnary(avatorLocalPath)
-  
-  if(!avator){
+
+  if (!avator) {
     throw new ApiError(401, "Avator Upload Failed")
   }
 
@@ -297,6 +297,23 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     )
 })
 
+// Delete User Profile Methode...
+const deleteUserProfile = asyncHandler(async (req, res) => {
+  const user = await User.findOneAndDelete(req.user._id).select("-refreshToken -password")
+  if (!user) {
+    throw new ApiError(404, "User Not Found")
+  }
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        user,
+        "User Profile Deleted"
+      )
+    )
+})
+
 export {
   sigIn,
   login,
@@ -304,5 +321,6 @@ export {
   forgotPassword,
   getUserProfile,
   updateUserDetail,
-  updateUserProfile
+  updateUserProfile,
+  deleteUserProfile
 }
