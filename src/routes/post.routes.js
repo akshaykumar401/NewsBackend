@@ -2,7 +2,8 @@ import { Router } from "express";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import {
-  createPost
+  createPost,
+  deletePost
 } from "../controllers/post.controller.js";
 
 const router = Router()
@@ -11,8 +12,19 @@ const router = Router()
 // Create Post
 router.route("/createPost").post(
   verifyJWT,
-  upload.single("image"),
+  upload.fields([
+    {
+      name: "image",
+      maxCount: 1
+    }
+  ]),
   createPost
+)
+
+// Delete Post -> req.param(id)
+router.route("/c/:id").get(
+  verifyJWT,
+  deletePost
 )
 
 // Edit Post
@@ -22,6 +34,7 @@ router.route("/createPost").post(
 // View Current User Post
 
 // View Post -> req.param(id)
+
 
 
 

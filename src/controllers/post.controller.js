@@ -33,7 +33,7 @@ const createPost = asyncHandler(async (req, res) => {
 
   const user = await User.findById(req.user._id)
   user.post.push(newPost._id)
-  await user.save({validateBeforeSave: false})
+  await user.save({ validateBeforeSave: false })
 
   return res
     .status(201)
@@ -47,7 +47,32 @@ const createPost = asyncHandler(async (req, res) => {
 
 })
 
+// Delete Post Methode...
+const deletePost = asyncHandler(async (req, res) => {
+  const { id } = req.params
+
+  // finding Post and delete
+  const post = await Post.findByIdAndDelete(id)
+
+  // Finding user
+  const user = await User.findById(req.user?._id)
+
+  // Removing Post from User
+  user.post.pull(post._id)
+  await user.save({ validateBeforeSave: false })
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        {},
+        "Post Deleted Successfully",
+      )
+    )
+})
 
 export {
   createPost,
+  deletePost
 }
