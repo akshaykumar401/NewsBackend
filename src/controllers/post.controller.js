@@ -10,7 +10,7 @@ const createPost = asyncHandler(async (req, res) => {
   const { title, description } = req.body
 
   // Cheaking is All Field is Given
-  if (!title && !description) {
+  if (!title || !description) {
     throw new ApiError(404, "Please Fill All Field");
   }
 
