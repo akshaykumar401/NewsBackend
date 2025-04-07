@@ -205,7 +205,15 @@ const getUserProfile = asyncHandler(async (req, res) => {
 
   // Cheaking is User Exist
   if (!user) {
-    throw new ApiError(404, "User Not Found");
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                [],
+                "User Profile"
+            )
+        )
   }
 
 
