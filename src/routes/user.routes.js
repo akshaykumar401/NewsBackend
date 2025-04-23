@@ -9,7 +9,8 @@ import {
   getUserProfile,
   updateUserDetail,
   updateUserProfile,
-  deleteUserProfile
+  deleteUserProfile,
+  generateReferanceToken
 } from "../controllers/user.controller.js";
 
 const router = Router()
@@ -33,6 +34,11 @@ router.route("/login").post(
 // Forget Password
 router.route("/forgotPassword").post(
   forgotPassword
+)
+
+// Generate Referance Token
+router.route("/generateReferanceToken").post(
+  generateReferanceToken
 )
 
 // Secure Routes
