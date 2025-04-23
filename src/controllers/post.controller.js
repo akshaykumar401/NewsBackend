@@ -95,6 +95,8 @@ const viewAllPost = asyncHandler(async (req, res) => {
       post.user.refreshToken = undefined;
     }
   });
+  // sort posts by createdAt in descending order
+  posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   return res
     .status(200)
@@ -131,7 +133,8 @@ const viewUserPost = asyncHandler(async (req, res) => {
       post.user.refreshToken = undefined;
     }
   });
-
+  // sort posts by createdAt in descending order
+  posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   return res
     .status(200)
     .json(
