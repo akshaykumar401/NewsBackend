@@ -111,7 +111,7 @@ const viewAllPost = asyncHandler(async (req, res) => {
 
 // View Login User Post Method...
 const viewUserPost = asyncHandler(async (req, res) => {
-  const posts = await Post.find({ user: req.user?._id }).populate("user")
+  const posts = await Post.find({ user: req.user?._id }).populate("user comments").select("-password -refreshToken")
 
   // if Not Having Post
   if (!posts || posts.length === 0) {
@@ -345,7 +345,8 @@ const getPost = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
   // Finding user...
-  const post = await Post.findById({ _id: id }).populate("user");
+  const post = await Post.findById({ _id: id }).populate("user comments");
+
 
   if (!post) {
     return res
@@ -374,11 +375,75 @@ const getPost = asyncHandler(async (req, res) => {
     )
 })
 
+// Like Post Methode...
+const likePost = asyncHandler(async (req, res) => {
+  const id = req.user._id;
+  const postId = req.params.id;
+
+  // Veriving if the post exists
+  const post = await Post.findById(postId);
+  if (!post) 
+    throw new ApiError(404, "Post not found");
+
+  // Verifying is The user is Exist...
+  const user = await User.findById(id);
+  if (!user) 
+    throw new ApiError(404, "User Not Exist");
+
+  post.likes.push(id);
+  await post.save({ validateBeforeSave: false });
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        post,
+        "Post Liked Successfully",
+      )
+    )
+})
+
+// Dislike Post Methode...
+const dislikePost = asyncHandler(async (req, res) => {
+  const id = req.user._id;
+  const postId = req.params.id;
+
+  // Validating is Post Exist...
+  const post = await Post.findById(postId);
+  if (!post)
+    throw new ApiError(404, "Post not found");
+
+  // Validating is User Exist
+  const user = await User.findById(id);
+  if (!user)
+    throw new ApiError(404, "User Not Exist");
+
+  // validating is User already liked the post
+  if (!post.likes.includes(id))
+    throw new ApiError(404, "You have not liked this post");
+
+  post.likes.pull(id);
+  await post.save({ validateBeforeSave: false });
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        post,
+        "Post Disliked Successfully",
+      )
+    )
+})
+
 export {
   createPost,
   deletePost,
   viewAllPost,
   viewUserPost,
   editPost,
-  getPost
+  getPost,
+  likePost,
+  dislikePost
 }

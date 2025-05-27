@@ -38,6 +38,21 @@ const userSchima = new Schema(
         ref: "Post",
       }
     ],
+    followers: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      }
+    ],
+    following: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      }
+    ],
+    accessToken: {
+      type: String,
+    },
     refreshToken: {
       type: String,
     }

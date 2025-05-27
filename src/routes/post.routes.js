@@ -7,7 +7,9 @@ import {
   viewAllPost,
   viewUserPost,
   editPost,
-  getPost
+  getPost,
+  likePost,
+  dislikePost
 } from "../controllers/post.controller.js";
 
 const router = Router()
@@ -61,6 +63,17 @@ router.route("/viewPost/:id").get(
   getPost
 )
 
+// Like post Route
+router.route("/likePost/:id").patch(
+  verifyJWT,
+  likePost
+)
+
+// Dislike post Route
+router.route("/dislikePost/:id").patch(
+  verifyJWT,
+  dislikePost
+)
 
 
 export default router;

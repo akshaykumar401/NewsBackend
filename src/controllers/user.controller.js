@@ -254,7 +254,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
 
 // Get user Profile
 const getUserProfile = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id).select("-password -refreshToken")
+  const user = await User.findById(req.user._id).populate("followers following").select("-password -refreshToken")
 
   // Cheaking is User Exist
   if (!user) {
@@ -375,6 +375,63 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
     )
 })
 
+// Follow and Folling User Methode...
+const followAndFollingUser = asyncHandler(async (req, res) => {
+  const { userId } = req.params
+  const owner = req.user._id
+
+  // Validating is User is Exist or not...
+  const user = await User.findById(userId)
+  if (!user)
+    throw new ApiError(404, "User Not Found or Invalid UserId")
+
+  // Validating is Owner is Exist or Not...
+  const ownerUser = await User.findById(owner)
+  if (!ownerUser)
+    throw new ApiError(404, "User Not Found")
+
+  ownerUser.following.push(userId)
+  await ownerUser.save()
+  user.followers.push(owner)
+  await user.save()
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        {},
+        "User Followed"
+      )
+    )
+})
+
+// Displaying All Following user Methode...
+const displayFollowingUser = asyncHandler(async (req, res) =>{
+  const id = req.user._id
+
+  // Validating is User is Exist or not...
+  const user = await User.findById(id)
+  if (!user)
+    throw new ApiError(404, "User Not Found or Invalid UserId")
+
+  // Populating Following User
+  const followingUsers = await User.find({ _id: { $in: user.following } })
+    .select("-password -refreshToken")
+    .populate("followers following")
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        followingUsers,
+        "Following Users"
+      )
+    )
+
+})
+
 export {
   sigIn,
   login,
@@ -384,5 +441,7 @@ export {
   updateUserDetail,
   updateUserProfile,
   deleteUserProfile,
-  generateReferanceToken
+  generateReferanceToken,
+  followAndFollingUser,
+  displayFollowingUser
 }
