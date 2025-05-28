@@ -142,7 +142,15 @@ const generateReferanceToken = (async (req, res) => {
 
   const incomingRefreshToken = refreshToken || bodyRefreshToken
   if (!incomingRefreshToken) {
-    throw new ApiError(401, "Unauthorized Request");
+    return res
+      .status(401)
+      .json(
+        new ApiResponse(
+          401,
+          {},
+          "Unauthorized Request"
+        )
+      )
   }
   try {
     const decodedToken = jwt.verify(
