@@ -84,17 +84,17 @@ const sigIn = asyncHandler(async (req, res) => {
 
 // Login Method...
 const login = asyncHandler(async (req, res) => {
-  const { email, username, password } = req.body;
+  const { email, password } = req.body;
 
   // Validating All Fields
-  if (!(email || username)) {
+  if (!email) {
     throw new ApiError(404, 'Email or UserName is Required')
   }
 
   // Cheaking is User exist
   const user = await User.findOne({
     $or: [
-      { username }, { email }
+      { email }
     ]
   })
   if (!user) {
