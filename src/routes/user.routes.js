@@ -12,7 +12,8 @@ import {
   deleteUserProfile,
   generateReferanceToken,
   followAndFollingUser,
-  displayFollowingUser
+  displayFollowingUser,
+  unFollowUser
 } from "../controllers/user.controller.js";
 
 const router = Router()
@@ -79,6 +80,12 @@ router.route("/deleteProfile").delete(
 router.route("/follow/:userId").patch(
   verifyJWT,
   followAndFollingUser
+)
+
+// Unfollow User
+router.route("/unfollow/:userId").patch(
+  verifyJWT,
+  unFollowUser
 )
 
 // Display Folling user...

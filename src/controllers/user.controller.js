@@ -406,6 +406,43 @@ const followAndFollingUser = asyncHandler(async (req, res) => {
     )
 })
 
+// UnFollow User Methode...
+const unFollowUser = asyncHandler(async (req, res) => {
+  const { userId } = req.params
+  const owner = req.user._id
+
+  // Validating is User is Exist or not...
+  const user = await User.findById(userId)
+  if (!user)
+    throw new ApiError(404, "User Not Found or Invalid UserId")
+
+  // Validating is Owner is Exist or Not...
+  const ownerUser = await User.findById(owner)
+  if (!ownerUser)
+    throw new ApiError(404, "User Not Found")
+
+  // Validating is User is Following or Not...
+  if (!ownerUser.following.includes(userId)) {
+    throw new ApiError(404, "You are not following this user")
+  }
+
+  // Removing Following and Followers
+  ownerUser.following.pull(userId)
+  await ownerUser.save()
+  user.followers.pull(owner)
+  await user.save()
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        {},
+        "User UnFollowed"
+      )
+    )
+})
+
 // Displaying All Following user Methode...
 const displayFollowingUser = asyncHandler(async (req, res) =>{
   const id = req.user._id
@@ -443,5 +480,6 @@ export {
   deleteUserProfile,
   generateReferanceToken,
   followAndFollingUser,
-  displayFollowingUser
+  displayFollowingUser,
+  unFollowUser
 }
