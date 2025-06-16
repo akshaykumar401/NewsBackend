@@ -189,7 +189,7 @@ const generateReferanceToken = (async (req, res) => {
         )
       )
   } catch (error) {
-    throw new ApiError(401, error?.message || "Invalide Referace token")
+    throw new ApiError(401, "Invalide Referace token")
   }
 })
 
