@@ -136,35 +136,30 @@ const login = asyncHandler(async (req, res) => {
 
 // Referace Token Generation Method...
 const generateReferanceToken = (async (req, res) => {
-  // retrive the refresh token from the cookie
-  const {refreshToken} = req.cookies
-  const {bodyRefreshToken} = req.body
-
-  const incomingRefreshToken = refreshToken || bodyRefreshToken
+  // Retrive the refresh token from the cookie
+  const incomingRefreshToken = req.cookies.refreshToken || req.headers;
+  // Validating the refresh token
   if (!incomingRefreshToken) {
-    return res
-      .status(401)
-      .json(
-        new ApiResponse(
-          401,
-          {},
-          "Unauthorized Request"
-        )
-      )
+    throw new ApiError(401, "Refresh Token is Required");
   }
+
   try {
     const decodedToken = jwt.verify(
       incomingRefreshToken,
       process.env.REFRESH_TOKEN_SECRET
-    )
-
+    );
+    
+    // Finding User by ID
     const user = await User.findById(decodedToken?._id)
-    if (!user) {
+
+    // Validating the user...
+    if (!user){
       throw new ApiError(401, "Unauthorized Request");
     }
 
+    // Validating the refresh token with the user
     if (incomingRefreshToken !== user?.refreshToken) {
-      throw new ApiError(401, "Refresh Token is expired or Userd")
+      throw new ApiError(401, "Refresh Token is expired or Used")
     }
 
     const options = {
@@ -172,26 +167,29 @@ const generateReferanceToken = (async (req, res) => {
       secure: true,
     }
 
-    const { accessToken, refreshToken } = await generrateToken(user._id)
+    const { newAccessToken, newRefreshToken } = await generrateToken(user._id)
 
     return res
       .status(200)
-      .cookie("accessToken", accessToken, options)
-      .cookie("refreshToken", refreshToken, options)
+      .cookie("accessToken", newAccessToken, options)
+      .cookie("refreshToken", newRefreshToken, options)
       .json(
         new ApiResponse(
           200,
           {
-            accessToken,
-            refreshToken: refreshToken
+            accessToken: newAccessToken,
+            refreshToken: newRefreshToken,
+            user: user
           },
           "Access Token Refreshed"
         )
       )
+    
   } catch (error) {
-    throw new ApiError(401, "Invalide Referace token")
+    console.error("Error in generateReferanceToken:", error);
+    throw new ApiError(401, "Invalid Refresh Token");
   }
-})
+});
 
 // Logout Methode...
 const logout = asyncHandler(async (req, res) => {
