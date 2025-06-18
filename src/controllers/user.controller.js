@@ -138,6 +138,7 @@ const login = asyncHandler(async (req, res) => {
 const generateReferanceToken = (async (req, res) => {
   // Retrive the refresh token from the cookie
   const incomingRefreshToken = req.cookies.refreshToken || req.headers;
+  console.log("Incoming Refresh Token:", incomingRefreshToken);
   // Validating the refresh token
   if (!incomingRefreshToken) {
     throw new ApiError(401, "Refresh Token is Required");
@@ -187,7 +188,15 @@ const generateReferanceToken = (async (req, res) => {
     
   } catch (error) {
     console.error("Error in generateReferanceToken:", error);
-    throw new ApiError(401, "Invalid Refresh Token");
+    return res
+      .status(400)
+      .json(
+        new ApiResponse(
+          400,
+          {},
+          `Error in generating refresh token: ${error.message}`
+        )
+      );
   }
 });
 
