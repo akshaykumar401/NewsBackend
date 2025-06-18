@@ -137,8 +137,7 @@ const login = asyncHandler(async (req, res) => {
 // Referace Token Generation Method...
 const generateReferanceToken = (async (req, res) => {
   // Retrive the refresh token from the cookie
-  const incomingRefreshToken = req.cookies.refreshToken || req.headers;
-  console.log("Incoming Refresh Token:", incomingRefreshToken);
+  const {incomingRefreshToken} = req.body;
   // Validating the refresh token
   if (!incomingRefreshToken) {
     throw new ApiError(401, "Refresh Token is Required");
@@ -187,7 +186,7 @@ const generateReferanceToken = (async (req, res) => {
       )
     
   } catch (error) {
-    console.error("Error in generateReferanceToken:", error);
+    // console.error("Error in generateReferanceToken:", error);
     return res
       .status(400)
       .json(

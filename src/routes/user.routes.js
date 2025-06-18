@@ -40,7 +40,7 @@ router.route("/forgotPassword").post(
 )
 
 // Generate Referance Token
-router.route("/generateReferanceToken").get(
+router.route("/generateReferanceToken").post(
   generateReferanceToken
 )
 
