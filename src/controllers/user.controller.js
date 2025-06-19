@@ -504,7 +504,7 @@ const displayOtherUserProfile = asyncHandler(async (req, res) => {
   }
   
   // Populating Followers and Following
-  const userWithFollowersAndFollowing = await User.findById(user._id).select("-password -refreshToken").populate("followers following")
+  const userWithFollowersAndFollowing = await User.findById(user._id).select("-password -refreshToken").populate("followers following post")
 
   return res
     .status(200)
