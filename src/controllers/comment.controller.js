@@ -21,6 +21,7 @@ const sendComment = asyncHandler(async (req, res) => {
     userId: userId,
     postId: postId,
     comment: comment,
+    userName: req.user.username,
   });
 
   // Pushing Comment to Post
