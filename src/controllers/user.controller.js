@@ -492,6 +492,31 @@ const displayFollowingUser = asyncHandler(async (req, res) => {
 
 })
 
+// Display Other User Profile Methode...
+const displayOtherUserProfile = asyncHandler(async (req, res) => {
+  const { username } = req.params
+
+  // Validating is User is Exist or not...
+  const user = await User.findOne({ username })
+
+  if ( !user ) {
+    throw new ApiError(404, "User Not Found or Invalid Username")
+  }
+  
+  // Populating Followers and Following
+  const userWithFollowersAndFollowing = await User.findById(user._id).select("-password -refreshToken").populate("followers following")
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        userWithFollowersAndFollowing,
+        "User Profile"
+      )
+    )
+})
+
 export {
   sigIn,
   login,
@@ -504,5 +529,6 @@ export {
   generateReferanceToken,
   followAndFollingUser,
   displayFollowingUser,
-  unFollowUser
+  unFollowUser,
+  displayOtherUserProfile
 }

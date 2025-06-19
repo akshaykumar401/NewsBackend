@@ -13,7 +13,8 @@ import {
   generateReferanceToken,
   followAndFollingUser,
   displayFollowingUser,
-  unFollowUser
+  unFollowUser,
+  displayOtherUserProfile,
 } from "../controllers/user.controller.js";
 
 const router = Router()
@@ -92,6 +93,12 @@ router.route("/unfollow/:userId").patch(
 router.route("/following").get(
   verifyJWT,
   displayFollowingUser
+)
+
+// Display Other User Profile
+router.route("/otherUserProfile/:username").get(
+  verifyJWT,
+  displayOtherUserProfile
 )
 
 
