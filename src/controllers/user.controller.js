@@ -137,10 +137,19 @@ const login = asyncHandler(async (req, res) => {
 // Referace Token Generation Method...
 const generateReferanceToken = (async (req, res) => {
   // Retrive the refresh token from the cookie
-  const {incomingRefreshToken} = req.body;
+  const incomingRefreshToken = req.cookies?.refreshToken;
+
   // Validating the refresh token
   if (!incomingRefreshToken) {
-    throw new ApiError(401, "Refresh Token is Required");
+    return res
+      .status(401)
+      .json(
+        new ApiResponse(
+          401,
+          {},
+          "Refresh Token Not Found"
+        )
+      )
   }
 
   try {
@@ -148,12 +157,12 @@ const generateReferanceToken = (async (req, res) => {
       incomingRefreshToken,
       process.env.REFRESH_TOKEN_SECRET
     );
-    
+
     // Finding User by ID
     const user = await User.findById(decodedToken?._id)
 
     // Validating the user...
-    if (!user){
+    if (!user) {
       throw new ApiError(401, "Unauthorized Request");
     }
 
@@ -167,24 +176,24 @@ const generateReferanceToken = (async (req, res) => {
       secure: true,
     }
 
-    const { newAccessToken, newRefreshToken } = await generrateToken(user._id)
+    const { accessToken, refreshToken } = await generrateToken(user._id)
 
     return res
       .status(200)
-      .cookie("accessToken", newAccessToken, options)
-      .cookie("refreshToken", newRefreshToken, options)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
       .json(
         new ApiResponse(
           200,
           {
-            accessToken: newAccessToken,
-            refreshToken: newRefreshToken,
+            accessToken: accessToken,
+            refreshToken: refreshToken,
             user: user
           },
           "Access Token Refreshed"
         )
       )
-    
+
   } catch (error) {
     // console.error("Error in generateReferanceToken:", error);
     return res
@@ -458,7 +467,7 @@ const unFollowUser = asyncHandler(async (req, res) => {
 })
 
 // Displaying All Following user Methode...
-const displayFollowingUser = asyncHandler(async (req, res) =>{
+const displayFollowingUser = asyncHandler(async (req, res) => {
   const id = req.user._id
 
   // Validating is User is Exist or not...
