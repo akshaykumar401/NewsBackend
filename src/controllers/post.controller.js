@@ -31,6 +31,10 @@ const createPost = asyncHandler(async (req, res) => {
     referanceImage: refImage?.url || "",
   })
 
+  // Populate User from created Post
+  await newPost.populate("user");
+  
+  // Pushing Post to User
   const user = await User.findById(req.user._id)
   user.post.push(newPost._id)
   await user.save({ validateBeforeSave: false })
